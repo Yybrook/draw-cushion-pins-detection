@@ -2,6 +2,7 @@ pyqt5==5.15.4
 xlrd==1.2.0
 numpy==1.19.5
 opencv-python==3.4.1.15
+scikit-image==0.17.2
 numba==0.53.1
 matplotlib==3.3.4
 scipy==1.5.4

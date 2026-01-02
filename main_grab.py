@@ -260,8 +260,6 @@ def show_teach_interface(message: dict, frame_data: np.ndarray):
     else:
         part_format = part
     file_path = os_path.join(CF_TEMP_TEACH_DIR, r"Origin_%s_%s_%s_%s.npy" % (now, camera_location["Line"], camera_location["Location"], part_format))
-    # file_path = os_path.join(CF_TEMP_TEACH_DIR, r"Origin_%s_%s_%s_%s.npy" % (now, camera_location["Line"], camera_location["Location"], part))
-
     np.save(file_path, frame_data)  # 保存为二进制文件
 
     # 序列化

@@ -2,6 +2,7 @@ from typing import Optional, Union
 import numpy as np
 import cv2
 import math
+from skimage.filters import threshold_sauvola
 from numba import jit
 from json import dumps
 from matplotlib import pyplot as plt
@@ -178,8 +179,17 @@ class FrameOperator:
         return copy
 
     @staticmethod
-    def binarization_transform(frame: np.ndarray, scale_alpha: float, scale_beta: float, gamma_c: float, gamma_power: float, log_c: float, thresh: int,
-                               scale_enable: bool = True, gamma_enable: bool = False, log_enable: bool = False, auto_thresh: bool = False):
+    def binarization_transform(
+            frame: np.ndarray,
+            scale_alpha: float, scale_beta: float,
+            gamma_c: float, gamma_power: float,
+            log_c: float,
+            thresh: int,
+            sauvola_thresh_window_size: int, sauvola_thresh_k: float,
+            scale_enable: bool = True, gamma_enable: bool = False, log_enable: bool = False,
+            auto_thresh: bool = False, thread_method: int = 1
+
+    ):
 
         copy = frame.copy()
 
@@ -202,22 +212,56 @@ class FrameOperator:
         # 灰度图
         gray = copy
 
-        # 根据灰度图自动获取thresh
-        if auto_thresh:
-            # 计算直方图
-            x, hist = FrameOperator.calculate_hist(gray)
-            # 平滑曲线
-            smooth_x, smooth_hist = FrameOperator.smooth_hist(x=x, hist=hist)
-            # 找波谷
-            valleys_x, _, _, _ = FrameOperator.find_valleys_and_peaks(x=smooth_x, hist=smooth_hist, whitelist=['valley'])
-            # 找参考值
-            ref_thresh = FrameOperator.calculate_reference_thresh(valleys_x, _, _, _)
+        if thread_method == 1:
+            r = 128
 
-            if ref_thresh is not None:
-                thresh = ref_thresh
+            # 方法一
+            #     Apply Sauvola binarization to an image.
+            #     Parameters:
+            #         image (ndarray): Grayscale image to be binarized.
+            #         window_size (int): Size of the local region (should be odd).
+            #         k (float): Hyperparameter, typically in range [0.2, 0.5].
+            #         r (float): Dynamic range of standard deviation (default: 128 for 8-bit images).
+            #     Returns:
+            #         binary_image (ndarray): Binarized image.
+            # Calculate the mean and standard deviation within the window
+            # mean = cv2.blur(image, (window_size, window_size))
+            mean = cv2.boxFilter(gray, ddepth=-1, ksize=(sauvola_thresh_window_size, sauvola_thresh_window_size))
+            # mean_sq = cv2.blur(image ** 2, (window_size, window_size))
+            mean_sq = cv2.boxFilter(gray ** 2, ddepth=-1, ksize=(sauvola_thresh_window_size, sauvola_thresh_window_size))
+            stddev = np.sqrt(mean_sq - mean ** 2)
 
-        # 二值化
-        _, binarization = cv2.threshold(gray, thresh, 255, cv2.THRESH_BINARY)
+            # Compute the threshold using Sauvola formula
+            threshold = mean * (1 + sauvola_thresh_k * ((stddev / r) - 1))
+
+            # # 方法二
+            # # 应用阈值进行二值化
+            # threshold = threshold_sauvola(gray, sauvola_thresh_window_size, sauvola_thresh_k, r)
+
+            # Apply the threshold to get the binary image
+            binarization = (gray > threshold).astype(np.uint8) * 255
+
+        elif thread_method == 0:
+            # 根据灰度图自动获取thresh
+            if auto_thresh:
+                # 计算直方图
+                x, hist = FrameOperator.calculate_hist(gray)
+                # 平滑曲线
+                smooth_x, smooth_hist = FrameOperator.smooth_hist(x=x, hist=hist)
+                # 找波谷
+                valleys_x, _, _, _ = FrameOperator.find_valleys_and_peaks(x=smooth_x, hist=smooth_hist, whitelist=['valley'])
+                # 找参考值
+                ref_thresh = FrameOperator.calculate_reference_thresh(valleys_x, _, _, _)
+
+                if ref_thresh is not None:
+                    thresh = ref_thresh
+
+            # 二值化
+            _, binarization = cv2.threshold(gray, thresh, 255, cv2.THRESH_BINARY)
+
+        else:
+            raise NotImplementedError
+
         return binarization, gray
 
     @staticmethod
@@ -785,6 +829,11 @@ class FrameOperator:
         log_enable = algorithm_parameters["LogEnable"]
         thresh = algorithm_parameters["Thresh"]
         auto_thresh = algorithm_parameters["AutoThresh"]
+
+        sauvola_thresh_window_size = algorithm_parameters["SauvolaThreshWindowSize"]
+        sauvola_thresh_k = algorithm_parameters["SauvolaThreshK"]
+        thread_method = algorithm_parameters["ThreadMethod"]
+
         eliminated_span = algorithm_parameters["EliminatedSpan"]
         reserved_interval = algorithm_parameters["ReservedInterval"]
         erode_shape = algorithm_parameters["ErodeShape"]
@@ -810,8 +859,12 @@ class FrameOperator:
         # 梯形变换
         perspective = FrameOperator.perspective_transform(frame, vertexes)
         # 二值化
-        binarization, _ = FrameOperator.binarization_transform(perspective, scale_alpha, scale_beta, gamma_c, gamma_power, log_c, thresh,
-                                                               scale_enable, gamma_enable, log_enable, auto_thresh)
+        binarization, _ = FrameOperator.binarization_transform(
+            perspective, scale_alpha, scale_beta, gamma_c, gamma_power, log_c,
+            thresh, sauvola_thresh_window_size, sauvola_thresh_k,
+            scale_enable, gamma_enable, log_enable,
+            auto_thresh, thread_method
+        )
         # 去噪
         denoise = FrameOperator.denoise_transform(binarization, eliminated_span, reserved_interval,
                                                   erode_shape, erode_ksize, erode_iterations,
@@ -853,6 +906,11 @@ class FrameOperator:
         log_enable = message["LogEnable"]
         thresh = message["Thresh"]
         auto_thresh = message["AutoThresh"]
+
+        sauvola_thresh_window_size = message["SauvolaThreshWindowSize"]
+        sauvola_thresh_k = message["SauvolaThreshK"]
+        thread_method = message["ThreadMethod"]
+
         eliminated_span = message["EliminatedSpan"]
         reserved_interval = message["ReservedInterval"]
         erode_shape = message["ErodeShape"]
@@ -884,8 +942,11 @@ class FrameOperator:
         # 梯形变换
         perspective = FrameOperator.perspective_transform(frame, vertexes)
         # 二值化
-        binarization, _ = FrameOperator.binarization_transform(perspective, scale_alpha, scale_beta, gamma_c, gamma_power, log_c, thresh,
-                                                               scale_enable, gamma_enable, log_enable, auto_thresh)
+        binarization, _ = FrameOperator.binarization_transform(
+            perspective, scale_alpha, scale_beta, gamma_c, gamma_power, log_c,
+            thresh, sauvola_thresh_window_size, sauvola_thresh_k,
+            scale_enable, gamma_enable, log_enable,
+            auto_thresh, thread_method)
         # 去噪
         denoise = FrameOperator.denoise_transform(binarization, eliminated_span, reserved_interval,
                                                   erode_shape, erode_ksize, erode_iterations,
@@ -901,7 +962,7 @@ class FrameOperator:
         # 计算pins_map
         pins_map = FrameOperator.convert_contours_collection_to_array(contours_collection, x_number, y_number)
 
-        # # 计算实际 ref_pins_map
+        # 计算实际 ref_pins_map
         # if side != CF_TEACH_REFERENCE_SIDE:
         #     ref_pins_map = cv2.flip(ref_pins_map, flipCode=0)  # 水平翻转
 
@@ -1008,11 +1069,11 @@ class FrameOperator:
 
         err_pins_location_mask = np.isin(ref_pins_location_structured, pins_location_structured)
         err_pins_location_structured = ref_pins_location_structured[~err_pins_location_mask]
-        err_pins_location = err_pins_location_structured.view(int).reshape(-1, 2)[:, [1, 0]]  # 行 列 交换
+        err_pins_location = err_pins_location_structured.view(int).reshape(-1, 2)[:, [1, 0]]        # 行 列 交换
 
         err_null_location_mask = np.isin(ref_null_location_structured, null_location_structured)
         err_null_location_structured = ref_null_location_structured[~err_null_location_mask]
-        err_null_location = err_null_location_structured.view(int).reshape(-1, 2)[:, [1, 0]]  # 行 列 交换
+        err_null_location = err_null_location_structured.view(int).reshape(-1, 2)[:, [1, 0]]        # 行 列 交换
 
         return err_pins_location, err_null_location
 

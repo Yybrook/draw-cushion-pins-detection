@@ -257,7 +257,8 @@ class DatabaseOperator:
             "ErodeShape", "ErodeKsize", "ErodeIterations",
             "DilateShape", "DilateKsize", "DilateIterations",
             "StripeEnable", "ErodeEnable", "DilateEnable",
-            "MinArea", "MaxArea", "MaxRoundness", "MaxDistance"
+            "MinArea", "MaxArea", "MaxRoundness", "MaxDistance",
+            "SauvolaThreshWindowSize", "SauvolaThreshK", "ThreadMethod",
         ]
         return self.get_process_parameters(demand_list=demand_list, filter_dict=filter_dict)
 

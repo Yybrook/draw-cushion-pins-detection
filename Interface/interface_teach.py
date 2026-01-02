@@ -206,14 +206,24 @@ class InterfaceTeach(QMainWindow, Ui_Teach):
             log_enable = self.process_parameters.get("LogEnable", False)
             thresh = self.process_parameters.get("Thresh", 80)
             auto_thresh = self.process_parameters.get("AutoThresh", True)
+            thresh_method = self.process_parameters.get("ThreadMethod", 1)
+            sauvola_thresh_window_size = self.process_parameters.get("SauvolaThreshWindowSize", 15)
+            sauvola_thresh_k = self.process_parameters.get("SauvolaThreshK", 0.2)
             self.binarization_page.init(scale_alpha, scale_beta, gamma_c, gamma_power, log_c, thresh,
-                                        scale_enable, gamma_enable, log_enable, auto_thresh)
+                                        scale_enable, gamma_enable, log_enable, auto_thresh,
+                                        thresh_method, sauvola_thresh_window_size, sauvola_thresh_k)
             # 刷新界面
             QApplication.processEvents()
             # 显示图片
-            self.show_binarization_image(scale_alpha=scale_alpha, scale_beta=scale_beta, gamma_c=gamma_c, gamma_power=gamma_power, log_c=log_c, thresh=thresh,
-                                         scale_enable=scale_enable, gamma_enable=gamma_enable, log_enable=log_enable, auto_thresh=auto_thresh,
-                                         show_binarization=self.binarization_page.checkBoxShowBinarization.isChecked())
+            self.show_binarization_image(
+                scale_alpha=scale_alpha, scale_beta=scale_beta, gamma_c=gamma_c, gamma_power=gamma_power, log_c=log_c,
+                thresh=thresh, thresh_method=thresh_method,
+                scale_enable=scale_enable, gamma_enable=gamma_enable, log_enable=log_enable,
+                auto_thresh=auto_thresh,
+                sauvola_thresh_window_size=sauvola_thresh_window_size,
+                sauvola_thresh_k=sauvola_thresh_k,
+                show_binarization=self.binarization_page.checkBoxShowBinarization.isChecked()
+            )
         # 去噪页面
         elif index == CF_TEACH_DENOISE_PAGE:
             # 设置最小尺寸
@@ -426,6 +436,9 @@ class InterfaceTeach(QMainWindow, Ui_Teach):
             log_enable = parameters.get("LogEnable")
             auto_thresh = parameters.get("AutoThresh")
             show_binarization = parameters.get("ShowBinarization")
+            sauvola_thresh_window_size = parameters.get("SauvolaThreshWindowSize")
+            sauvola_thresh_k = parameters.get("SauvolaThreshK")
+            thread_method = parameters.get("ThreadMethod")
         else:
             scale_alpha = kwargs.get("scale_alpha")
             scale_beta = kwargs.get("scale_beta")
@@ -438,11 +451,18 @@ class InterfaceTeach(QMainWindow, Ui_Teach):
             log_enable = kwargs.get("log_enable")
             auto_thresh = kwargs.get("auto_thresh")
             show_binarization = kwargs.get("show_binarization")
+            sauvola_thresh_window_size = kwargs.get("sauvola_thresh_window_size")
+            sauvola_thresh_k = kwargs.get("sauvola_thresh_k")
+            thread_method = kwargs.get("thresh_method")
 
         # 处理图片
         frame_data = FrameOperator.perspective_transform(self.frame_data, vertexes)
-        binarization, gray = FrameOperator.binarization_transform(frame_data, scale_alpha, scale_beta, gamma_c, gamma_power, log_c, thresh,
-                                                                  scale_enable, gamma_enable, log_enable, auto_thresh)
+        binarization, gray = FrameOperator.binarization_transform(
+            frame_data, scale_alpha, scale_beta, gamma_c, gamma_power, log_c,
+            thresh, sauvola_thresh_window_size, sauvola_thresh_k,
+            scale_enable, gamma_enable, log_enable,
+            auto_thresh, thread_method
+        )
 
         # 计算直方图
         x, hist = FrameOperator.calculate_hist(gray)
@@ -501,6 +521,9 @@ class InterfaceTeach(QMainWindow, Ui_Teach):
         log_enable = self.process_parameters["LogEnable"]
         thresh = self.process_parameters["Thresh"]
         auto_thresh = self.process_parameters["AutoThresh"]
+        sauvola_thresh_window_size = self.process_parameters["SauvolaThreshWindowSize"]
+        sauvola_thresh_k = self.process_parameters["SauvolaThreshK"]
+        thread_method = self.process_parameters["ThreadMethod"]
 
         if "parameters" in kwargs:
             parameters = kwargs["parameters"]
@@ -515,6 +538,7 @@ class InterfaceTeach(QMainWindow, Ui_Teach):
             stripe_enable = parameters.get("StripeEnable")
             erode_enable = parameters.get("ErodeEnable")
             dilate_enable = parameters.get("DilateEnable")
+
         else:
             eliminated_span = kwargs.get("eliminated_span")
             reserved_interval = kwargs.get("reserved_interval")
@@ -530,8 +554,11 @@ class InterfaceTeach(QMainWindow, Ui_Teach):
 
         # 处理图片
         frame_data = FrameOperator.perspective_transform(self.frame_data, vertexes)
-        frame_data, _ = FrameOperator.binarization_transform(frame_data, scale_alpha, scale_beta, gamma_c, gamma_power, log_c, thresh,
-                                                             scale_enable, gamma_enable, log_enable, auto_thresh)
+        frame_data, _ = FrameOperator.binarization_transform(
+            frame_data, scale_alpha, scale_beta, gamma_c, gamma_power, log_c,
+            thresh, sauvola_thresh_window_size, sauvola_thresh_k,
+            scale_enable, gamma_enable, log_enable,
+            auto_thresh, thread_method)
         frame_data = FrameOperator.denoise_transform(frame_data, eliminated_span, reserved_interval,
                                                      erode_shape, erode_ksize, erode_iterations,
                                                      dilate_shape, dilate_ksize, dilate_iterations,
@@ -589,6 +616,10 @@ class InterfaceTeach(QMainWindow, Ui_Teach):
         y_mini = self.process_parameters["YMini"]
         y_maxi = self.process_parameters["YMaxi"]
 
+        sauvola_thresh_window_size = self.process_parameters["SauvolaThreshWindowSize"]
+        sauvola_thresh_k = self.process_parameters["SauvolaThreshK"]
+        thread_method = self.process_parameters["ThreadMethod"]
+
         if "parameters" in kwargs:
             parameters = kwargs["parameters"]
             min_area = parameters.get("MinArea")
@@ -605,8 +636,11 @@ class InterfaceTeach(QMainWindow, Ui_Teach):
 
         # 处理图片
         origin_frame_data = FrameOperator.perspective_transform(self.frame_data, vertexes)  # 原始图片
-        frame_data, _ = FrameOperator.binarization_transform(origin_frame_data, scale_alpha, scale_beta, gamma_c, gamma_power, log_c, thresh,
-                                                             scale_enable, gamma_enable, log_enable, auto_thresh)
+        frame_data, _ = FrameOperator.binarization_transform(
+            origin_frame_data, scale_alpha, scale_beta, gamma_c, gamma_power, log_c,
+            thresh, sauvola_thresh_window_size, sauvola_thresh_k,
+            scale_enable, gamma_enable, log_enable,
+            auto_thresh, thread_method)
         frame_data = FrameOperator.denoise_transform(frame_data, eliminated_span, reserved_interval,
                                                      erode_shape, erode_ksize, erode_iterations,
                                                      dilate_shape, dilate_ksize, dilate_iterations,
@@ -630,7 +664,7 @@ class InterfaceTeach(QMainWindow, Ui_Teach):
         columns = message.get("Columns")
         pins_map = message.get("PinsMap")
 
-        # # 以右侧相机为基准
+        # 以右侧相机为基准
         # if side != CF_TEACH_REFERENCE_SIDE:
         #     pins_map = cv2.flip(pins_map, flipCode=0)       # 水平翻转
         str_pins_map = MySerializer.serialize(pins_map)     # 序列化
@@ -681,6 +715,10 @@ class InterfaceTeach(QMainWindow, Ui_Teach):
         y_mini = self.process_parameters["YMini"]
         y_maxi = self.process_parameters["YMaxi"]
 
+        sauvola_thresh_window_size = self.process_parameters["SauvolaThreshWindowSize"]
+        sauvola_thresh_k = self.process_parameters["SauvolaThreshK"]
+        thread_method = self.process_parameters["ThreadMethod"]
+
         if "parameters" in kwargs:
             parameters = kwargs["parameters"]
             min_area = parameters.get("MinArea")
@@ -695,8 +733,11 @@ class InterfaceTeach(QMainWindow, Ui_Teach):
 
         # 处理图片
         origin_frame_data = FrameOperator.perspective_transform(self.frame_data, vertexes)  # 原始图片
-        frame_data, _ = FrameOperator.binarization_transform(origin_frame_data, scale_alpha, scale_beta, gamma_c, gamma_power, log_c, thresh,
-                                                             scale_enable, gamma_enable, log_enable, auto_thresh)
+        frame_data, _ = FrameOperator.binarization_transform(
+            origin_frame_data, scale_alpha, scale_beta, gamma_c, gamma_power, log_c,
+            thresh, sauvola_thresh_window_size, sauvola_thresh_k,
+            scale_enable, gamma_enable, log_enable,
+            auto_thresh, thread_method)
         frame_data = FrameOperator.denoise_transform(frame_data, eliminated_span, reserved_interval,
                                                      erode_shape, erode_ksize, erode_iterations,
                                                      dilate_shape, dilate_ksize, dilate_iterations,
@@ -1060,3 +1101,46 @@ class InterfaceTeach(QMainWindow, Ui_Teach):
             label.setStyleSheet("font: 75 12pt \"微软雅黑\";\ntext-decoration: underline;\ncolor: rgb(0, 170, 255);")
         else:
             label.setStyleSheet("font: 75 12pt \"微软雅黑\";\ncolor: rgb(0, 0, 0);")
+
+
+# if __name__ == "__main__":
+#     import sys
+#     app = QApplication(sys.argv)
+#
+#     from CameraCore.camera_identity import CameraIdentity
+#
+#     camera_identity = CameraIdentity(
+#         st_device_info=None,
+#         device_index=0,
+#         uid="Vir-CA060-11GM",
+#         serial_number="Vir90656359",
+#         current_ip=None,
+#         model_name=None,
+#     )
+#     camera_location = {'Line': '5-100', 'Location': 'RIGHT', 'Side': 'RIGHT'}
+#     frame_file = r"C:\Users\yy\Documents\MyProject\PinsErrorProof\pins-error-proof\Software\Pins-Ctrl\PinsCtrlData\Temp\Teach\Origin_20241212152511462798_5-100_RIGHT_2SD809605.npy"
+#     frame_data = np.load(frame_file)
+#     part = "2SD809605"
+#     activate_page = 0
+#
+#     db_operator = DatabaseOperator(r"C:\Users\yy\Documents\MyProject\PinsErrorProof\pins-error-proof\Software\Pins-Ctrl\PinsCtrlData\Database\pins_ctrl_database.accdb")
+#
+#     # 创建Interface实例
+#     interface_teach = InterfaceTeach(frame_data=frame_data,
+#                                      camera_identity=camera_identity,
+#                                      camera_location=camera_location,
+#                                      part=part,
+#                                      db_operator=db_operator,
+#                                      activate_page=activate_page)
+#
+#     # 连接信号
+#     # interface_teach.closeSignal.connect(lambda: os_remove(frame_file))
+#     # interface_teach.savePictureSignal.connect(lambda message: save_image(image=interface_teach.process_pixmap, message=message, parent=interface_teach))
+#
+#     interface_teach.show()
+#
+#     res = app.exec_()
+#
+#     db_operator.close()
+#
+#     exit(res)

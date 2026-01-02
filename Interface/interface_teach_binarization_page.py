@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtCore import pyqtSignal
 
-from PyQt5.QtWidgets import QVBoxLayout
+from PyQt5.QtWidgets import QVBoxLayout, QButtonGroup
 from UI.ui_teach_binarization_page import Ui_Form as Ui_TeachBinarizationPage
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas, NavigationToolbar2QT as NavigationToolbar
@@ -45,6 +45,23 @@ class InterfaceTeachBinarizationPage(QWidget, Ui_TeachBinarizationPage):
         # layout.addWidget(self.toolbar)
         layout.addWidget(self.canvas)
         self.widget.setLayout(layout)
+
+        self.thresh_enable: bool = True
+        self.sauvola_thresh_enable: bool = False
+
+        self.sauvola_thresh_window_size: int = 15
+        self.sauvola_thresh_k: float = 0.2
+
+        # 创建一个按钮组
+        self.group = QButtonGroup(self)
+        # 将单选框加入按钮组
+        self.group.addButton(self.checkBoxThreshEnable, 1)
+        self.group.addButton(self.checkBoxSauvolaThreshEnable, 2)
+
+        self.sauvola_thresh_window_size_values = {0: 15, 1: 25}
+        self.sauvola_thresh_k_values = {0: 0.2, 1: 0.3, 2: 0.4, 3: 0.5}
+        self.comboBoxSauvolaThreshWindowSize.addItems([str(k) for k in self.sauvola_thresh_window_size_values.values()])
+        self.comboBoxSauvolaThreshK.addItems([str(k) for k in self.sauvola_thresh_k_values.values()])
 
     def scaleAlphaChanged(self, value: int):
         self.scale_alpha = value * 0.1
@@ -103,6 +120,36 @@ class InterfaceTeachBinarizationPage(QWidget, Ui_TeachBinarizationPage):
         message = self.generate_message()
         self.refreshSignal.emit(message)
 
+    def threshEnable(self, value: bool):
+        self.thresh_enable = value
+        self.checkBoxAutoThresh.setEnabled(value)
+        self.horizontalSliderThresh.setEnabled(value)
+
+        self.sauvola_thresh_enable = not value
+
+        message = self.generate_message()
+        self.refreshSignal.emit(message)
+
+    def sauvolaThreshEnable(self, value: bool):
+        self.sauvola_thresh_enable = value
+        self.comboBoxSauvolaThreshWindowSize.setEnabled(value)
+        self.comboBoxSauvolaThreshK.setEnabled(value)
+
+        self.thresh_enable = not value
+
+        message = self.generate_message()
+        self.refreshSignal.emit(message)
+
+    def sauvolaThreshWindowSizeChanged(self, value: int):
+        self.sauvola_thresh_window_size = self.sauvola_thresh_window_size_values.get(value, 15)
+        message = self.generate_message()
+        self.refreshSignal.emit(message)
+
+    def sauvolaThreshKChanged(self, value: int):
+        self.sauvola_thresh_k = self.sauvola_thresh_k_values.get(value, 0.2)
+        message = self.generate_message()
+        self.refreshSignal.emit(message)
+
     def next(self):
         message = self.generate_message()
         self.nextSignal.emit(message)
@@ -117,7 +164,8 @@ class InterfaceTeachBinarizationPage(QWidget, Ui_TeachBinarizationPage):
         self.refreshSignal.emit(message)
 
     def init(self, scale_alpha: float, scale_beta: int, gamma_c: float, gamma_power: float, log_c: float, thresh: int,
-             scale_enable: bool, gamma_enable: bool, log_enable: bool, auto_thresh: bool):
+             scale_enable: bool, gamma_enable: bool, log_enable: bool, auto_thresh: bool,
+             thresh_method: int, sauvola_thresh_window_size: int, sauvola_thresh_k: float):
         """
         初始化页面
         :return:
@@ -154,6 +202,35 @@ class InterfaceTeachBinarizationPage(QWidget, Ui_TeachBinarizationPage):
         self.checkBoxLogEnable.setChecked(self.log_enable)
         self.checkBoxAutoThresh.setChecked(self.auto_thresh)
 
+        if thresh_method:
+            self.thresh_enable = False
+            self.sauvola_thresh_enable = True
+        else:
+            self.thresh_enable = True
+            self.sauvola_thresh_enable = False
+
+        self.sauvola_thresh_window_size = sauvola_thresh_window_size
+        self.sauvola_thresh_k = sauvola_thresh_k
+
+        self.checkBoxThreshEnable.setChecked(self.thresh_enable)
+        self.checkBoxSauvolaThreshEnable.setChecked(self.sauvola_thresh_enable)
+
+        for k, v in self.sauvola_thresh_window_size_values.items():
+            if v == self.sauvola_thresh_window_size:
+                index = k
+                break
+        else:
+            index = 0
+        self.comboBoxSauvolaThreshWindowSize.setCurrentIndex(index)
+
+        for k, v in self.sauvola_thresh_k_values.items():
+            if v == self.sauvola_thresh_k:
+                index = k
+                break
+        else:
+            index = 0
+        self.comboBoxSauvolaThreshK.setCurrentIndex(index)
+
     def generate_message(self) -> dict:
         message = {"ScaleAlpha": self.scale_alpha,
                    "ScaleBeta": self.scale_beta,
@@ -166,5 +243,32 @@ class InterfaceTeachBinarizationPage(QWidget, Ui_TeachBinarizationPage):
                    "LogEnable": self.log_enable,
                    "AutoThresh": self.auto_thresh,
                    "ShowBinarization": self.show_binarization,
+
+                   "SauvolaThreshWindowSize": self.sauvola_thresh_window_size,
+                   "SauvolaThreshK": self.sauvola_thresh_k
                    }
+
+        if self.thresh_enable and not self.sauvola_thresh_enable:
+            message["ThreadMethod"] = 0
+        elif not self.thresh_enable and self.sauvola_thresh_enable:
+            message["ThreadMethod"] = 1
+        else:
+            message["ThreadMethod"] = 1
+
         return message
+
+
+if __name__ == "__main__":
+    import sys
+    from PyQt5 import QtCore, QtGui, QtWidgets
+
+    app = QtWidgets.QApplication(sys.argv)
+    Form = QtWidgets.QWidget()
+
+    binarization_page = InterfaceTeachBinarizationPage()
+    binarization_page.show()
+
+    sys.exit(app.exec_())
+
+
+

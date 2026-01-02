@@ -146,10 +146,8 @@ class InterfaceTeachPinsMapPage(QWidget, Ui_TeachPinsMapPage):
         self.tablePins.setRowCount(self.y_number)
 
         # 表头
-        # self.tablePins.setHorizontalHeaderLabels([str(i) for i in range(0, self.x_number)])
-        # self.tablePins.setVerticalHeaderLabels([str(i) for i in range(0, self.y_number)])
-        self.tablePins.setHorizontalHeaderLabels([str(i - self.x_number // 2) for i in range(0, self.x_number)])
-        self.tablePins.setVerticalHeaderLabels([str(i - self.y_number // 2) for i in range(0, self.y_number)])
+        self.tablePins.setHorizontalHeaderLabels([str(i - self.x_number//2) for i in range(0, self.x_number)])
+        self.tablePins.setVerticalHeaderLabels([str(i - self.y_number//2) for i in range(0, self.y_number)])
 
         self.refresh_pins_map(rows=self.y_number, columns=self.x_number, pins_map=self.pins_map, tabel=self.tablePins)
 

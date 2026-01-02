@@ -104,8 +104,8 @@ class InterfacePartDetail(QDialog, Ui_PartDetail):
         self.tablePins.setRowCount(self.rows)
 
         # 表头
-        self.tablePins.setHorizontalHeaderLabels([str(i - self.columns // 2) for i in range(0, self.columns)])
-        self.tablePins.setVerticalHeaderLabels([str(i - self.rows // 2) for i in range(0, self.rows)])
+        self.tablePins.setHorizontalHeaderLabels([str(i - self.columns//2) for i in range(0, self.columns)])
+        self.tablePins.setVerticalHeaderLabels([str(i - self.rows//2) for i in range(0, self.rows)])
 
         # 刷新表格
         InterfaceTeachPinsMapPage.refresh_pins_map(rows=self.rows, columns=self.columns, pins_map=self.pins_map, tabel=self.tablePins)
