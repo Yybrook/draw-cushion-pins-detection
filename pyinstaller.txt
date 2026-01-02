@@ -1,5 +1,6 @@
-pyinstaller -w main_root.py -i .\PinsCtrlData\Static\Pictures\camera_yy.ico -n Pins-Ctrl-RGB --clean
-pyinstaller -w main_root.py -i .\PinsCtrlData\Static\Pictures\camera_yy.ico -n Pins-Ctrl-RGB --clean --upx-dir "C:\Program Files\UPX\upx-4.0.2-win64"
+pyinstaller -w main_root.py -p main_grab.py -p main_teach.py -i .\PinsCtrlData\Static\Pictures\camera_yy.ico -n Pins-Ctrl --clean --upx-dir "C:\Program Files\UPX\upx-4.0.2-win64"
+
+pyinstaller -w main_root.py -p main_grab.py -p main_teach.py -i .\PinsCtrlData\Static\Pictures\camera_yy.ico -n Pins-Ctrl --clean
 
 # -n 不要修改！
 # 在PowerShell中，空格前面加`

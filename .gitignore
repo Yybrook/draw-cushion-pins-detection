@@ -1,8 +1,8 @@
 /PinsCtrlData/Temp/Teach/
-/PinsCtrlData/Temp/Demo/
 /PinsCtrlData/Temp/sequence
 /PinsCtrlData/Saved/
 /PinsCtrlData/Database/*.laccdb
+/PinsCtrlData/DetectionRecords
 
 /__pycache__/
 

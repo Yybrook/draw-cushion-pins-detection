@@ -3,10 +3,17 @@ import json
 import numpy as np
 from time import sleep
 
+from CameraCore.my_camera_t import MyCamera
+from CameraCore.camera_err_header import CAMERA_ENUM_NONE
+from MvImport.MvErrorDefine_const import MV_OK
+from MvImport.CameraParams_const import MV_ACCESS_Exclusive
+
 from main_grab import camera_save_process as grab_camera_save_process
 
 from Utils.database_operator import DatabaseOperator
 from Utils.serializer import MySerializer
+
+from User.config_static import CF_PROJECT_ROLE, CF_TEACH_REFERENCE_SIDE
 
 
 COMMAND_PREFIX = 'command'
@@ -24,6 +31,7 @@ PART_PREFIX = 'model'
 RESPONSE_PREFIX = 'result'
 RESPONSE_ENUM_ERROR = 'enum error'
 RESPONSE_ENUM_NONE = 'enum none'
+RESPONSE_ENUM_SEPARATOR = "^_^"
 RESPONSE_OPEN_CAMERA_SUCCESSFUL = 'open success'
 RESPONSE_OPEN_CAMERA_FAILED = 'open failed'
 RESPONSE_DETECTION_ERROR = 'check error'
@@ -31,7 +39,8 @@ RESPONSE_DETECTION_ERROR = 'check error'
 RESPONSE_DETECTION_RIGHT = 'check right","picture":"{}'
 RESPONSE_DETECTION_WRONG = 'check wrong","picture":"{}'
 
-RESPONSE_COMMAND_ILLEGAL = 'command illegal'
+# RESPONSE_COMMAND_ILLEGAL = 'command illegal'
+RESPONSE_COMMAND_ILLEGAL = 'check error'
 
 
 class MyCorrespondent(Thread):
@@ -174,7 +183,7 @@ class MyCorrespondent(Thread):
 
     @staticmethod
     def creat_enum_message() -> str:
-        symbol = "^_^"
+        symbol = RESPONSE_ENUM_SEPARATOR
         message = symbol
         cameras_identity = MyCamera.get_enum_cameras_identity()
         for identity in cameras_identity:
@@ -199,11 +208,20 @@ class MyCorrespondent(Thread):
         else:
             return self.create_message(RESPONSE_PREFIX, RESPONSE_OPEN_CAMERA_FAILED)
 
+        # 获取相机位置
+        camera_location = self.db_operator.get_camera_identity(demand_list=["Line", "Location", "Side"], filter_dict={"SerialNumber": identity.serial_number})
+        # 如果side为“LEFT”,相机视野旋转180度
+        side = camera_location["Side"]
+        if side == CF_TEACH_REFERENCE_SIDE:
+            rotate_flag = 0
+        else:
+            rotate_flag = 2
+
         my_camera = MyCamera(
             camera_identity=identity,
             name=None,
             resize_ratio=None,
-            rotate_flag=0,
+            rotate_flag=rotate_flag,
             access_mode=MV_ACCESS_Exclusive,
             msg_child_conn=None,
             imgbuf_child_conn=None,
