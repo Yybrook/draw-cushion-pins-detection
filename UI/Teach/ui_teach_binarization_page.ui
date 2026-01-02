@@ -1,0 +1,932 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>461</width>
+    <height>585</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>0</width>
+    <height>0</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(255, 255, 255);</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,1,0,4,0">
+   <property name="leftMargin">
+    <number>6</number>
+   </property>
+   <property name="topMargin">
+    <number>6</number>
+   </property>
+   <property name="rightMargin">
+    <number>6</number>
+   </property>
+   <property name="bottomMargin">
+    <number>6</number>
+   </property>
+   <item>
+    <widget class="QLabel" name="title">
+     <property name="styleSheet">
+      <string notr="true">font: 75 16pt &quot;微软雅黑&quot;;</string>
+     </property>
+     <property name="text">
+      <string>二值化</string>
+     </property>
+     <property name="indent">
+      <number>24</number>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="Line" name="line">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer_1">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="0,1,0">
+     <property name="spacing">
+      <number>1</number>
+     </property>
+     <item>
+      <spacer name="horizontalSpacer_3">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Expanding</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0" columnstretch="0,0,0,0,0,0,0">
+       <property name="spacing">
+        <number>6</number>
+       </property>
+       <item row="6" column="1" colspan="6">
+        <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="0,1">
+         <item>
+          <widget class="QLabel" name="labelGammaPowerValue">
+           <property name="styleSheet">
+            <string notr="true">font: 10pt &quot;微软雅黑&quot;;</string>
+           </property>
+           <property name="text">
+            <string>0</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSlider" name="horizontalSliderGammaPower">
+           <property name="minimum">
+            <number>0</number>
+           </property>
+           <property name="maximum">
+            <number>200</number>
+           </property>
+           <property name="pageStep">
+            <number>1</number>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="tickPosition">
+            <enum>QSlider::TicksBelow</enum>
+           </property>
+           <property name="tickInterval">
+            <number>10</number>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="1" column="0" colspan="2">
+        <widget class="QLabel" name="labelScale">
+         <property name="styleSheet">
+          <string notr="true">font: 75 12pt &quot;微软雅黑&quot;;
+text-decoration: underline;</string>
+         </property>
+         <property name="text">
+          <string>线性变换</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="labelScaleBeta">
+         <property name="styleSheet">
+          <string notr="true">font: 10pt &quot;微软雅黑&quot;;</string>
+         </property>
+         <property name="text">
+          <string>截距</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1" colspan="6">
+        <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,1">
+         <item>
+          <widget class="QLabel" name="labelScaleBetaValue">
+           <property name="styleSheet">
+            <string notr="true">font: 10pt &quot;微软雅黑&quot;;</string>
+           </property>
+           <property name="text">
+            <string>0</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSlider" name="horizontalSliderScaleBeta">
+           <property name="minimum">
+            <number>-500</number>
+           </property>
+           <property name="maximum">
+            <number>500</number>
+           </property>
+           <property name="pageStep">
+            <number>10</number>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="tickPosition">
+            <enum>QSlider::TicksBelow</enum>
+           </property>
+           <property name="tickInterval">
+            <number>20</number>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="2" column="1" colspan="6">
+        <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,1">
+         <item>
+          <widget class="QLabel" name="labelScaleAlphaValue">
+           <property name="styleSheet">
+            <string notr="true">font: 10pt &quot;微软雅黑&quot;;</string>
+           </property>
+           <property name="text">
+            <string>0</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSlider" name="horizontalSliderScaleAlpha">
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <property name="minimum">
+            <number>0</number>
+           </property>
+           <property name="maximum">
+            <number>200</number>
+           </property>
+           <property name="pageStep">
+            <number>1</number>
+           </property>
+           <property name="value">
+            <number>0</number>
+           </property>
+           <property name="sliderPosition">
+            <number>0</number>
+           </property>
+           <property name="tracking">
+            <bool>true</bool>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="tickPosition">
+            <enum>QSlider::TicksBelow</enum>
+           </property>
+           <property name="tickInterval">
+            <number>10</number>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="8" column="1" colspan="6">
+        <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="0,1">
+         <item>
+          <widget class="QLabel" name="labelLogConstantValue">
+           <property name="styleSheet">
+            <string notr="true">font: 10pt &quot;微软雅黑&quot;;</string>
+           </property>
+           <property name="text">
+            <string>0</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSlider" name="horizontalSliderLogConstant">
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <property name="minimum">
+            <number>0</number>
+           </property>
+           <property name="maximum">
+            <number>500</number>
+           </property>
+           <property name="pageStep">
+            <number>1</number>
+           </property>
+           <property name="value">
+            <number>0</number>
+           </property>
+           <property name="sliderPosition">
+            <number>0</number>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="tickPosition">
+            <enum>QSlider::TicksBelow</enum>
+           </property>
+           <property name="tickInterval">
+            <number>10</number>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="4" column="2">
+        <widget class="QCheckBox" name="checkBoxGammaEnable">
+         <property name="styleSheet">
+          <string notr="true">font: 10pt &quot;微软雅黑&quot;;</string>
+         </property>
+         <property name="text">
+          <string>使能</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="labelGammaConstant">
+         <property name="styleSheet">
+          <string notr="true">font: 10pt &quot;微软雅黑&quot;;</string>
+         </property>
+         <property name="text">
+          <string>常数</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QCheckBox" name="checkBoxScaleEnable">
+         <property name="styleSheet">
+          <string notr="true">font: 10pt &quot;微软雅黑&quot;;</string>
+         </property>
+         <property name="text">
+          <string>使能</string>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="4">
+        <widget class="QLabel" name="labelRefThreshValue">
+         <property name="styleSheet">
+          <string notr="true">font: 10pt &quot;微软雅黑&quot;;</string>
+         </property>
+         <property name="text">
+          <string>0</string>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="2">
+        <widget class="QCheckBox" name="checkBoxShowBinarization">
+         <property name="styleSheet">
+          <string notr="true">font: 10pt &quot;微软雅黑&quot;;</string>
+         </property>
+         <property name="text">
+          <string>显示</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+         <property name="tristate">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="0" colspan="7">
+        <widget class="QSlider" name="horizontalSliderThresh">
+         <property name="maximum">
+          <number>255</number>
+         </property>
+         <property name="pageStep">
+          <number>1</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="tickPosition">
+          <enum>QSlider::TicksBelow</enum>
+         </property>
+         <property name="tickInterval">
+          <number>10</number>
+         </property>
+        </widget>
+       </item>
+       <item row="13" column="0" colspan="7">
+        <widget class="QLabel" name="label_3">
+         <property name="styleSheet">
+          <string notr="true">font: 8pt &quot;微软雅黑&quot;;</string>
+         </property>
+         <property name="text">
+          <string>* 【注意】 自动阈值只可在禁用所有变换方法时使用</string>
+         </property>
+         <property name="indent">
+          <number>10</number>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="0" colspan="2">
+        <widget class="QLabel" name="labelLog">
+         <property name="styleSheet">
+          <string notr="true">font: 75 12pt &quot;微软雅黑&quot;;
+text-decoration: underline;</string>
+         </property>
+         <property name="text">
+          <string>对数变换</string>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="6">
+        <widget class="QLabel" name="labelThreshValue">
+         <property name="styleSheet">
+          <string notr="true">font: 10pt &quot;微软雅黑&quot;;</string>
+         </property>
+         <property name="text">
+          <string>0</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="labelGammaPower">
+         <property name="styleSheet">
+          <string notr="true">font: 10pt &quot;微软雅黑&quot;;</string>
+         </property>
+         <property name="text">
+          <string>幂律</string>
+         </property>
+        </widget>
+       </item>
+       <item row="14" column="0" colspan="7">
+        <layout class="QHBoxLayout" name="horizontalLayout_9" stretch="0,0,0">
+         <property name="spacing">
+          <number>6</number>
+         </property>
+         <item>
+          <spacer name="horizontalSpacer_10">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QWidget" name="widget" native="true"/>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_11">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item row="8" column="0">
+        <widget class="QLabel" name="labelLogConstant">
+         <property name="styleSheet">
+          <string notr="true">font: 10pt &quot;微软雅黑&quot;;</string>
+         </property>
+         <property name="text">
+          <string>常数</string>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="0" colspan="2">
+        <widget class="QCheckBox" name="checkBoxAutoThresh">
+         <property name="styleSheet">
+          <string notr="true">font: 10pt &quot;微软雅黑&quot;;</string>
+         </property>
+         <property name="text">
+          <string>自动阈值</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0" colspan="2">
+        <widget class="QLabel" name="labelGamma">
+         <property name="styleSheet">
+          <string notr="true">font: 75 12pt &quot;微软雅黑&quot;;
+text-decoration: underline;</string>
+         </property>
+         <property name="text">
+          <string>伽马变换</string>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="0" colspan="2">
+        <widget class="QLabel" name="labelThresh">
+         <property name="styleSheet">
+          <string notr="true">font: 75 12pt &quot;微软雅黑&quot;;
+text-decoration: underline;</string>
+         </property>
+         <property name="text">
+          <string>二值化阈值</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="labelScaleAlpha">
+         <property name="styleSheet">
+          <string notr="true">font: 10pt &quot;微软雅黑&quot;;</string>
+         </property>
+         <property name="text">
+          <string>斜率</string>
+         </property>
+        </widget>
+       </item>
+       <item row="12" column="0" colspan="7">
+        <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="0,1,0">
+         <item>
+          <widget class="QLabel" name="labelThreshMinValue">
+           <property name="styleSheet">
+            <string notr="true">font: 8pt &quot;微软雅黑&quot;;</string>
+           </property>
+           <property name="text">
+            <string>0</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_12">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QLabel" name="labelThreshMaxValue">
+           <property name="styleSheet">
+            <string notr="true">font: 8pt &quot;微软雅黑&quot;;</string>
+           </property>
+           <property name="text">
+            <string>255</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="10" column="3">
+        <widget class="QLabel" name="label">
+         <property name="styleSheet">
+          <string notr="true">font: 10pt &quot;微软雅黑&quot;;</string>
+         </property>
+         <property name="text">
+          <string>参考值：</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="2">
+        <widget class="QCheckBox" name="checkBoxLogEnable">
+         <property name="styleSheet">
+          <string notr="true">font: 10pt &quot;微软雅黑&quot;;</string>
+         </property>
+         <property name="text">
+          <string>使能</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1" colspan="6">
+        <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="0,1">
+         <item>
+          <widget class="QLabel" name="labelGammaConstantValue">
+           <property name="styleSheet">
+            <string notr="true">font: 10pt &quot;微软雅黑&quot;;</string>
+           </property>
+           <property name="text">
+            <string>0</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSlider" name="horizontalSliderGammaConstant">
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <property name="minimum">
+            <number>0</number>
+           </property>
+           <property name="maximum">
+            <number>200</number>
+           </property>
+           <property name="pageStep">
+            <number>1</number>
+           </property>
+           <property name="value">
+            <number>0</number>
+           </property>
+           <property name="sliderPosition">
+            <number>0</number>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="tickPosition">
+            <enum>QSlider::TicksBelow</enum>
+           </property>
+           <property name="tickInterval">
+            <number>10</number>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="10" column="5">
+        <widget class="QLabel" name="label_2">
+         <property name="styleSheet">
+          <string notr="true">font: 10pt &quot;微软雅黑&quot;;</string>
+         </property>
+         <property name="text">
+          <string>当前值：</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0" colspan="7">
+        <widget class="QLabel" name="label_4">
+         <property name="styleSheet">
+          <string notr="true">font: 8pt &quot;微软雅黑&quot;;</string>
+         </property>
+         <property name="text">
+          <string>* 【注意】 三种变换方法不可同时使用</string>
+         </property>
+         <property name="indent">
+          <number>10</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_4">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Expanding</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <spacer name="verticalSpacer_2">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <property name="spacing">
+      <number>24</number>
+     </property>
+     <item>
+      <spacer name="horizontalSpacer_1">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="buttonBack">
+       <property name="styleSheet">
+        <string notr="true">font: 75 12pt &quot;微软雅黑&quot;;</string>
+       </property>
+       <property name="text">
+        <string>上一步</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="buttonNext">
+       <property name="styleSheet">
+        <string notr="true">font: 75 12pt &quot;微软雅黑&quot;;</string>
+       </property>
+       <property name="text">
+        <string>下一步</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBack</sender>
+   <signal>clicked()</signal>
+   <receiver>Form</receiver>
+   <slot>back()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>218</x>
+     <y>577</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>339</x>
+     <y>451</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonNext</sender>
+   <signal>clicked()</signal>
+   <receiver>Form</receiver>
+   <slot>next()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>317</x>
+     <y>577</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>427</x>
+     <y>451</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSliderScaleAlpha</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>Form</receiver>
+   <slot>scaleAlphaChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>430</x>
+     <y>127</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>224</x>
+     <y>451</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSliderThresh</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>Form</receiver>
+   <slot>threshChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>430</x>
+     <y>378</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>388</x>
+     <y>451</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSliderScaleBeta</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>Form</receiver>
+   <slot>scaleBetaChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>430</x>
+     <y>153</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>175</x>
+     <y>451</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSliderGammaConstant</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>Form</receiver>
+   <slot>gammaConstantChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>422</x>
+     <y>207</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>130</x>
+     <y>451</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSliderGammaPower</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>Form</receiver>
+   <slot>gammaPowerChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>430</x>
+     <y>233</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>103</x>
+     <y>451</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSliderLogConstant</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>Form</receiver>
+   <slot>logConstantChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>387</x>
+     <y>287</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>91</x>
+     <y>451</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBoxScaleEnable</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>Form</receiver>
+   <slot>scaleEnable()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>187</x>
+     <y>87</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>182</x>
+     <y>451</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBoxGammaEnable</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>Form</receiver>
+   <slot>gammaEnable()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>187</x>
+     <y>167</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>128</x>
+     <y>451</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBoxLogEnable</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>Form</receiver>
+   <slot>logEnable()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>187</x>
+     <y>247</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>127</x>
+     <y>451</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBoxShowBinarization</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>Form</receiver>
+   <slot>showBinarization()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>197</x>
+     <y>317</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>205</x>
+     <y>451</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBoxAutoThresh</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>Form</receiver>
+   <slot>autoThresh()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>69</x>
+     <y>338</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>51</x>
+     <y>686</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>back()</slot>
+  <slot>next()</slot>
+  <slot>scaleAlphaChanged()</slot>
+  <slot>threshChanged()</slot>
+  <slot>scaleBetaChanged()</slot>
+  <slot>gammaConstantChanged()</slot>
+  <slot>gammaPowerChanged()</slot>
+  <slot>logConstantChanged()</slot>
+  <slot>scaleEnable()</slot>
+  <slot>gammaEnable()</slot>
+  <slot>logEnable()</slot>
+  <slot>showBinarization()</slot>
+  <slot>autoThresh()</slot>
+ </slots>
+</ui>
