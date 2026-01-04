@@ -223,14 +223,14 @@ if __name__ == "__main__":
     if src is None:
         # src = r"D:\02_Creativity\02_Projects\PinsErrorProof\VirtualCameras\34G821105A_CORRECT_MVCE05031GM.avi"
         # src = r"D:\02_Creativity\02_Projects\PinsErrorProof\VirtualCameras\34G821105A_WRONG_MVCE05031GM.avi"
-        # src = r"D:\02_Creativity\02_Projects\PinsErrorProof\VirtualCameras\MEB_1_MVCU06010GM.avi"
+        src = r"C:\Users\yy\Documents\yyProjects\DrawCushionPinsDetection\VirtualCameras\Gray\MEB_1_MVCU06010GM.avi"
         # src = r"D:\02_Creativity\02_Projects\PinsErrorProof\VirtualCameras\MEB_2_MVCU06010GM.avi"
         # src = r"D:\02_Creativity\02_Projects\PinsErrorProof\VirtualCameras\MEB_3_MVCU06010GM.avi"
         # src = r"D:\02_Creativity\02_Projects\PinsErrorProof\VirtualCameras\MEB_4_1200x1584.avi"
         # src = r"D:\02_Creativity\02_Projects\PinsErrorProof\VirtualCameras\MEB_5_1200x1584.avi"
         # src = r"D:\02_Creativity\02_Projects\PinsErrorProof\VirtualCameras\MEB_6_1200x1584.avi"
         # src = r"D:\02_Creativity\02_Projects\PinsErrorProof\VirtualCameras\MEB_7_1200x1584.avi"
-        src = r"D:\02_Creativity\02_Projects\PinsErrorProof\VirtualCameras\Gray\MEB_8_MVCU06010GM.avi"
+        # src = r"D:\02_Creativity\02_Projects\PinsErrorProof\VirtualCameras\Gray\MEB_8_MVCU06010GM.avi"
 
     dim_str = args["dim"]
     if dim_str is None:

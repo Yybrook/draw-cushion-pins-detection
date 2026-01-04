@@ -12,7 +12,7 @@ from MvImport.CameraParams_const import MV_GIGE_DEVICE, MV_ACCESS_Exclusive, MV_
 from MvImport.CameraParams_header import (MV_CC_DEVICE_INFO_LIST, MV_CC_DEVICE_INFO, MV_FRAME_OUT_INFO_EX,
                                           MV_FRAME_OUT, MV_SAVE_IMAGE_TO_FILE_PARAM_EX, MV_Image_Jpeg, MV_Image_Png, MV_Image_Bmp)
 from MvImport.MvErrorDefine_const import MV_OK
-from MvImport.PixelType_header import PixelType_Gvsp_Mono8, PixelType_Gvsp_RGB8_Packed
+from MvImport.PixelType_header import PixelType_Gvsp_Mono8, PixelType_Gvsp_RGB8_Packed, PixelType_Gvsp_BayerRG8
 
 
 from CameraCore.camera_operator import CameraOperator
@@ -653,6 +653,9 @@ class MyCamera(CameraOperator):
             elif st_frame_out_info.enPixelType == PixelType_Gvsp_RGB8_Packed:
                 frame_data = np.reshape(frame_data, (height, width, -1))
                 frame_data = cv2.cvtColor(src=frame_data, code=cv2.COLOR_RGB2BGR)
+            elif st_frame_out_info.enPixelType == PixelType_Gvsp_BayerRG8:
+                frame_data = np.reshape(frame_data, (height, width))
+                frame_data = cv2.cvtColor(frame_data, cv2.COLOR_BAYER_RG2BGR)
             else:
                 raise Exception("pixel type[%d] has not supported" % st_frame_out_info.enPixelType)
             # 开始加锁

@@ -32,11 +32,57 @@ from User.config_static import (CF_TEMP_TEACH_DIR, CF_RECORDS_ORIGIN_PICTURES_DI
                                 CF_RUNNING_SEQUENCE_FILE, CF_RUNNING_GRAB_FLAG, CF_RUNNING_ROOT_FLAG, CF_APP_ICON, CF_TEACH_REFERENCE_SIDE,
                                 CF_TEACH_AUTHORITY_PASSWORD)
 
+from MvImport.CameraParams_const import MV_GIGE_DEVICE
+from MvImport.CameraParams_header import MV_CC_DEVICE_INFO_LIST, MV_CC_DEVICE_INFO
+
+# 全局变量
+camera_identity: Optional[CameraIdentity] = None
+
+def enum_successful_callback(device_info_list: MV_CC_DEVICE_INFO_LIST, device_num: int, *args, **kwargs):
+    """
+    枚举成功回调函数
+    """
+    global camera_identity
+
+    for index in range(device_num):
+        # 解析设备信息
+        st_device_info: MV_CC_DEVICE_INFO = MyCamera.get_st_device_info(device_info_list=device_info_list, device_index=index)
+        device_info: dict = MyCamera.decode_device_info(st_device_info=st_device_info, device_index=index)
+        if device_info["SerialNumber"] == kwargs["SerialNumber"]:
+            camera_identity = CameraIdentity(st_device_info=st_device_info,
+                                             device_index=device_info.get("DeviceIndex"),
+                                             uid=device_info.get("Uid"),
+                                             serial_number=device_info.get("SerialNumber"),
+                                             current_ip=device_info.get("CurrentIp"),
+                                             model_name=device_info.get("ModelName"))
+            break
+    else:
+        camera_identity = None
 
 def active_interface(arguments: dict):
 
-    camera_identity = arguments["CameraIdentity"]
+    _camera_identity: CameraIdentity = arguments["CameraIdentity"]
     camera_location = arguments["CameraLocation"]
+
+    global camera_identity
+    # 枚举相机
+    ret = MyCamera.enum_devices(device_type=MV_GIGE_DEVICE,
+                          enum_err_callback=None,
+                          enum_none_callback=None,
+                          enum_successful_callback=
+                          lambda device_info_list, device_num: enum_successful_callback(
+                              device_info_list=device_info_list,
+                              device_num=device_num,
+                              SerialNumber=_camera_identity.serial_number
+                          ))
+    if ret != MV_OK:
+        camera_identity = None
+    if camera_identity is None:
+        m = {"level": 'ERROR', "title": '错误', "text": '打开相机错误！',
+             "informative_text": '找不到相机: 序列号[%s] uid[%s]' % (_camera_identity.serial_number, _camera_identity.uid),
+             "detailed_text": '打开相机进程异常退出'}
+        Messenger.show_QMessageBox(widget=None, message=m, QLabelMinWidth=200)
+        exit(-1)
 
     # 如果side为“LEFT”,相机视野旋转180度
     side = camera_location["Side"]
