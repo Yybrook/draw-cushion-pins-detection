@@ -10,7 +10,7 @@ from MvImport.CameraParams_const import MV_ACCESS_Exclusive
 
 from main_grab import camera_save_process as grab_camera_save_process
 
-from Utils.database_operator import DatabaseOperator
+from Utils.database_operator import DatabaseOperator, get_lines_with_all, get_parts_with_all
 from Utils.serializer import MySerializer
 
 from User.config_static import CF_PROJECT_ROLE, CF_TEACH_REFERENCE_SIDE
@@ -20,6 +20,8 @@ COMMAND_PREFIX = 'command'
 COMMAND_STOP_LISTEN = 'stop listen'
 COMMAND_ENUM = 'enum device'
 COMMAND_OPEN_AND_DETECT = 'open and check'
+COMMAND_LINES = 'enum line'
+COMMAND_PARTS = 'enum part'
 
 COMMAND_DOING = 'doing'
 
@@ -139,14 +141,41 @@ class MyCorrespondent(Thread):
             response = self.enum_cameras()
             self.conn.send(response.encode('utf-8'))
             return True
+        elif command == COMMAND_LINES:
+            # 接收
+            # {"command":"enum line"}
+            # 响应
+            # {"result":"line1^_^line2^_^line3"}
+            lines = get_lines_with_all(db_operator=self.db_operator)[1:]
+            symbol = RESPONSE_ENUM_SEPARATOR
+            message = symbol
+            for line in lines:
+                message += line + symbol
+            response = self.create_message(RESPONSE_PREFIX, message[3:-3])
+            self.conn.send(response.encode('utf-8'))
+            return True
+        elif command == COMMAND_PARTS:
+            # 接收
+            # {"command":"enum part","line":"line1"}
+            # 响应
+            # {"result":"part1^_^part2^_^part3"}
+            selected_line = data[LINE_PREFIX]
+            parts = get_parts_with_all(db_operator=self.db_operator, line=selected_line)[1:]
+            symbol = RESPONSE_ENUM_SEPARATOR
+            message = symbol
+            for part in parts:
+                message += part + symbol
+            response = self.create_message(RESPONSE_PREFIX, message[3:-3])
+            self.conn.send(response.encode('utf-8'))
+            return True
         # 打开相机，检查，关闭相机
         elif command == COMMAND_OPEN_AND_DETECT:
             # 接收
             # {"command":"open and check","userDefined":"0","line":"5-100","model":"PART1"}
             # {"command":"open and check","userDefined":"Pin_5-200_Left","line":"5-100","model":"34D 809 606A"}
             # 响应
-            # {"result":"check right","picture":"xxx"}
-            # {"result":"check wrong","picture":"xxx"}
+            # {"result":"check right","picture":"xxx.jpg"}
+            # {"result":"check wrong","picture":"xxx.jpg"}
             # {"result":"open failed"}
             # {"result":"check error"}
 
@@ -264,10 +293,17 @@ class MyCorrespondent(Thread):
 
         # 判断结果
         if record["Result"]:
-            response = self.create_message(RESPONSE_PREFIX, RESPONSE_DETECTION_RIGHT.format(record["DetectionPicture"]))
+            msg = {
+                RESPONSE_PREFIX: "check right",
+                "picture": record["DetectionPicture"],
+            }
         else:
-            response = self.create_message(RESPONSE_PREFIX, RESPONSE_DETECTION_WRONG.format(record["DetectionPicture"]))
+            msg = {
+                RESPONSE_PREFIX: "check wrong",
+                "picture": record["DetectionPicture"],
+            }
 
+        response = json.dumps(msg)
         return response
 
     def do_detect(self, camera: MyCamera, line: str, part: str):
