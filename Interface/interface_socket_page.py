@@ -74,8 +74,9 @@ class InterfaceSocketPage(QWidget, Ui_SocketPage):
         # 获取有效ip
         ip, ips = SocketOperator.get_valid_ip()
         self.comboBoxIp.set_items(get_items_callback=lambda: self.get_ips(ips=ips))
-        if ip is not None:
-            self.comboBoxIp.setCurrentText(ip)
+        # if ip is not None:
+        #     self.comboBoxIp.setCurrentText(ip)
+        self.comboBoxIp.setCurrentText("127.0.0.1")
 
     def start_or_stop(self):
         text = self.buttonStartOrStop.text()

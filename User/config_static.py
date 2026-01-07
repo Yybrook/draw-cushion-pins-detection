@@ -1,4 +1,4 @@
-CF_VERSION = '3.2.3.2'
+CF_VERSION = '3.2.3.3'
 CF_CREATE_TIME = '2024年2月27日'
 CF_CONTACTS = {
     "安洪涛": "AnHongtao@csvw.com",
